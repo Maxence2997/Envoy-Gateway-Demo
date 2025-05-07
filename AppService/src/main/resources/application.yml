@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: AppService
+
+server:
+  port: 8081
+
+socket:
+  host: localhost
+  port: 9090
