@@ -19,6 +19,7 @@
     <redisson.version>3.23.5</redisson.version>
     <github.username>maxence2997</github.username>
     <docker.username>maxence2997</docker.username>
+    <docker-io.host>docker.io</docker-io.host>
   </properties>
   <dependencies>
     <dependency>
@@ -116,17 +117,16 @@
         <artifactId>jib-maven-plugin</artifactId>
         <version>3.4.2</version>
         <executions>
-          <!-- 1. 在 deploy 階段，先把 image build 並推到本機 Docker daemon -->
+          <!--       推到本機   -->
+          <!--          <execution>-->
+          <!--            <id>docker-build-local</id>-->
+          <!--            <phase>deploy</phase>-->
+          <!--            <goals>-->
+          <!--              <goal>dockerBuild</goal>-->
+          <!--            </goals>-->
+          <!--          </execution>-->
           <execution>
-            <id>docker-build-local</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>dockerBuild</goal>
-            </goals>
-          </execution>
-          <!-- 2. 同樣在 deploy 階段，再把同一個 image 推到 GHCR -->
-          <execution>
-            <id>push-to-ghcr</id>
+            <id>push-to-dockerHub</id>
             <phase>deploy</phase>
             <goals>
               <goal>build</goal>
@@ -134,9 +134,11 @@
           </execution>
         </executions>
         <configuration>
-          <from><image>eclipse-temurin:21-jdk-alpine</image></from>
+          <from>
+            <image>eclipse-temurin:21-jdk-alpine</image>
+          </from>
           <to>
-            <image>docker.io/${docker.username}/envoy-demo</image>
+            <image>${docker-io.host}/${docker.username}/envoy-demo</image>
             <tags>
               <tag>${project.artifactId}-latest</tag>
             </tags>
