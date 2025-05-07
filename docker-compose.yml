@@ -1,0 +1,22 @@
+name: Envoy-Demo
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: redis
+    ports: # 可以省略，服務可透透過 docker-compose 內部網路互相連接
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  authservice:
+    container_name: authservice
+    image: idv.maxence2997/authservice:0.0.1-SNAPSHOT
+    environment:
+      - REDIS_ADDRESS=redis://redis:6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+
+volumes:
+  redis-data:

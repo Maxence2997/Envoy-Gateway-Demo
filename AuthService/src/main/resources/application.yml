@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: AuthService
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          address: ${REDIS_ADDRESS:redis://127.0.0.1:6378}
+          password: ${REDIS_PASSWORD:}
+          timeout: 3000
+          connectionPoolSize: 64
+          subscriptionConnectionPoolSize: 50
+          connectionMinimumIdleSize: 10
+        threads: 16
+        nettyThreads: 32
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
