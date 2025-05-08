@@ -17,6 +17,7 @@ spring:
 grpc:
   server:
     port: 9100
+    address: 0.0.0.0
 
 management:
   endpoints:
