@@ -17,19 +17,63 @@ static_resources:
                     - name: local_service
                       domains: [ "*" ]
                       routes:
+
+                        # Route A: /auth 前綴，轉到 auth_service
+                        - match:
+                            prefix: "/auth/"
+                          route:
+                            cluster: auth_service
+                            prefix_rewrite: "/"   # 去掉 /auth 前綴，後端看到的是 /xxx
+
+                        # Route B: /app 前綴，轉到 app_service
+                        - match:
+                            prefix: "/app/"
+                          route:
+                            cluster: app_service
+                            prefix_rewrite: "/"
+
+                        # Catch-all：其餘 404
                         - match:
                             prefix: "/"
                           direct_response:
-                            status: 200
+                            status: 404
                             body:
-                              inline_string: "OK"
+                              inline_string: "Not Found"
                 http_filters:
                   - name: envoy.filters.http.router
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
 
-  # direct_response 不需要任何 cluster
-  clusters: [ ]
+  clusters:
+    # Cluster: auth_service
+    - name: auth_service
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: auth_service
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: auth-service    # Docker Compose 服務名稱
+                      port_value: 8080          # Auth Service 的 HTTP port
+
+    # Cluster: app_service
+    - name: app_service
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: app_service
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: app-service     # Docker Compose 服務名稱
+                      port_value: 8081          # App Service 的 HTTP port
 
 admin:
   access_log_path: "/tmp/admin_access.log"
