@@ -1,15 +1,25 @@
 name: Envoy-Demo
 services:
+  envoy-gateway:
+    image: envoyproxy/envoy:v1.34-latest
+    container_name: envoy-gateway
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+    ports:
+      - "10000:10000"   # 對外開放 HTTP Gateway
+      - "9901:9901"     # Envoy 管理介面
+    networks:
+      - envoy-net
   redis:
     image: redis:7.0-alpine
     container_name: redis
-    ports: # 可以省略，服務可透透過 docker-compose 內部網路互相連接
-      - "6379:6379"
     volumes:
       - redis-data:/data
+    networks:
+      - envoy-net
 
-  authservice:
-    container_name: authservice
+  auth-service:
+    container_name: auth-service
     image: docker.io/maxence2997/envoy-demo:authservice-latest
     environment:
       - REDIS_ADDRESS=redis://redis:6379
@@ -18,14 +28,20 @@ services:
       - "9100:9100"  # gRPC server port
     depends_on:
       - redis
+    networks:
+      - envoy-net
 
-  appservice:
-    container_name: appservice
+  app-service:
+    container_name: app-service
     image: docker.io/maxence2997/envoy-demo:appservice-latest
     ports:
       - "8081:8081" # HTTP server port
       - "9090:9090" # Socket.io server port
-
+    networks:
+      - envoy-net
 
 volumes:
   redis-data:
+
+networks:
+  envoy-net:
