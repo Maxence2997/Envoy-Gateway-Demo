@@ -17,6 +17,13 @@
     <java.version>21</java.version>
     <kotlin.version>2.1.20</kotlin.version>
     <redisson.version>3.23.5</redisson.version>
+    <!-- Protocol Buffers Java runtime -->
+    <protobuf.version>4.30.2</protobuf.version>
+    <!-- gRPC Java libraries -->
+    <grpc.version>1.72.0</grpc.version>
+    <!-- Envoy Java Control-Plane API -->
+    <envoy.api.version>1.0.49</envoy.api.version>
+    <grpc-server-spring-boot-starter.version>3.1.0.RELEASE</grpc-server-spring-boot-starter.version>
     <github.username>maxence2997</github.username>
     <docker.username>maxence2997</docker.username>
     <docker-io.host>docker.io</docker-io.host>
@@ -48,6 +55,33 @@
       <artifactId>redisson-spring-boot-starter</artifactId>
       <version>${redisson.version}</version>
     </dependency>
+    <!-- gRPCServer Starter -->
+    <dependency>
+      <groupId>net.devh</groupId>
+      <artifactId>grpc-server-spring-boot-starter</artifactId>
+      <version>${grpc-server-spring-boot-starter.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.envoyproxy.controlplane</groupId>
+      <artifactId>api</artifactId>
+      <version>${envoy.api.version}</version>
+    </dependency>
+    <!-- Protobuf & gRPC runtime -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobuf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -67,9 +101,37 @@
   </dependencies>
 
   <build>
+    <extensions>
+      <!-- 偵測本機 OS，供 protoc 用 -->
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.7.0</version>
+      </extension>
+    </extensions>
     <sourceDirectory>src/main/kotlin</sourceDirectory>
     <testSourceDirectory>src/test/kotlin</testSourceDirectory>
     <plugins>
+      <plugin>
+        <groupId>org.xolstice.maven.plugins</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.6.1</version>
+        <configuration>
+          <!--suppress UnresolvedMavenProperty -->
+          <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
+          <pluginId>grpc-java</pluginId>
+          <!--suppress UnresolvedMavenProperty -->
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>compile-custom</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -148,6 +210,7 @@
           </container>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
 </project>
