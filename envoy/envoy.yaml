@@ -1,6 +1,6 @@
 static_resources:
   listeners:
-    - name: basic_http_listener
+    - name: http_listener
       address:
         socket_address:
           address: 0.0.0.0
@@ -10,27 +10,66 @@ static_resources:
             - name: envoy.filters.network.http_connection_manager
               typed_config:
                 "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
-                stat_prefix: ingress_http
+                stat_prefix: ingress_ws
                 route_config:
                   name: direct_route
                   virtual_hosts:
-                    - name: local_service
+                    - name: vh_http
                       domains: [ "*" ]
                       routes:
 
                         # Route A: /auth 前綴，轉到 auth_service
                         - match:
-                            prefix: "/auth/"
+                            prefix: "/auth"
                           route:
                             cluster: auth_service
-                            prefix_rewrite: "/"   # 去掉 /auth 前綴，後端看到的是 /xxx
+                            prefix_rewrite: ""   # 去掉 /auth 前綴，後端看到的是 /xxx
 
                         # Route B: /app 前綴，轉到 app_service
                         - match:
-                            prefix: "/app/"
+                            prefix: "/app"
                           route:
                             cluster: app_service
-                            prefix_rewrite: "/"
+                            prefix_rewrite: ""
+
+                        # Catch-all：其餘 404
+                        - match:
+                            prefix: "/"
+                          direct_response:
+                            status: 404
+                            body:
+                              inline_string: "Not Found"
+                http_filters:
+                  - name: envoy.filters.http.router
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+
+    - name: ws_listener
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 10001
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                stat_prefix: ingress_http
+                upgrade_configs:
+                  - upgrade_type: websocket
+                route_config:
+                  name: direct_route
+                  virtual_hosts:
+                    - name: vh_ws
+                      domains: [ "*" ]
+                      routes:
+
+                        # Socket.IO (WebSocket) => /socket.io/app 前綴
+                        - match:
+                            prefix: "/socket.io/app"
+                          route:
+                            cluster: app_service_ws
+                            prefix_rewrite: "/socket.io" # 去掉 /socket.io/app 前綴，後端看到的是 /socket.io
 
                         # Catch-all：其餘 404
                         - match:
@@ -74,6 +113,21 @@ static_resources:
                     socket_address:
                       address: app-service     # Docker Compose 服務名稱
                       port_value: 8081          # App Service 的 HTTP port
+
+    # Cluster: socketio_manager
+    - name: app_service_ws
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: app_service_ws
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: app-service
+                      port_value: 9090
 
 admin:
   access_log_path: "/tmp/admin_access.log"
