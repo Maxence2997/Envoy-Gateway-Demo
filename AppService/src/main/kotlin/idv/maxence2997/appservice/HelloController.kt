@@ -10,10 +10,10 @@ class HelloController {
 
     @GetMapping("/hello")
     fun hello(request: HttpServletRequest): String {
-        val token = request.getHeader("X-Auth-Token") ?: error("X-Auth-Token header not found")
-        val userId = request.getHeader("X-User-Id") ?: error("X-User-Id header not found")
-        val orgId = request.getHeader("X-Org-Id") ?: error("X-Org-Id header not found")
-        val username = request.getHeader("X-User-Username") ?: ""
+        val token = request.getHeader("x-auth-token") ?: error("x-auth-token header not found")
+        val userId = request.getHeader("x-user-id") ?: error("x-user-id header not found")
+        val orgId = request.getHeader("x-org-id") ?: error("x-org-id header not found")
+        val username = request.getHeader("x-user-username") ?: ""
 
         return "Hello $username($userId) from org $orgId, token=$token at ${LocalDateTime.now()}, testing envoy-gateway for REST API"
     }

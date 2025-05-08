@@ -29,7 +29,7 @@ class AuthzGrpcService(
         responseObserver: StreamObserver<CheckResponse>
     ) {
         val headers = request.attributes.request.http.headersMap
-        val token = headers["X-Auth-Token"].takeUnless { it.isNullOrBlank() }?.let { UUID.fromString(it) } ?: run {
+        val token = headers["x-auth-token"].takeUnless { it.isNullOrBlank() }?.let { UUID.fromString(it) } ?: run {
             responseObserver.onNext(
                 CheckResponse.newBuilder()
                     .setStatus(Status.newBuilder().setCode(Code.UNAUTHENTICATED_VALUE))
