@@ -86,17 +86,26 @@ class AuthzGrpcService(
                             .setValue(userBasicInfo.username)
                     )
             )
+            .addHeadersToRemove("x-auth-token") // 移除原本的 token header
             .build()
 
-        val resp = CheckResponse.newBuilder()
-            .setStatus(
-                Status.newBuilder()
-                    .setCode(Code.OK_VALUE)    // 0 = OK
-                    .build()
-            ).setOkResponse(okHttp)
-            .build()
 
-        responseObserver.onNext(resp)
-        responseObserver.onCompleted()
+        responseObserver.complete {
+            CheckResponse.newBuilder()
+                .setStatus(
+                    Status.newBuilder()
+                        .setCode(Code.OK_VALUE)    // 0 = OK
+                        .build()
+                )
+                .setOkResponse(okHttp)
+                .build()
+        }
     }
+}
+
+inline fun <T> StreamObserver<T>.complete(
+    block: () -> T
+) {
+    this.onNext(block.invoke())
+    this.onCompleted()
 }

@@ -23,19 +23,17 @@ class SocketIoServerInitializer(
                 // 1. 拿到原始的 HTTP headers
                 val headers = client.handshakeData.httpHeaders
 
-                val token = headers.get("X-Auth-Token")
-                    ?: error("X-Auth-Token header not found")
-                val userId = headers.get("X-User-Id")
+                val userId = headers.get("x-user-id")
                     ?: error("X-User-Id header not found")
-                val orgId = headers.get("X-Org-Id")
+                val orgId = headers.get("x-org-id")
                     ?: error("X-Org-Id header not found")
                 val username = headers.get("X-User-Username") ?: ""
 
-                println("Received message: $data from userId=$userId, token=$token")
+                println("Received message: $data from userId=$userId, orgId=$orgId, username=$username")
 
                 client.sendEvent(
                     "resp-testing-envoy-gateway-socketio",
-                    "Hello $username($userId) from org $orgId, token=$token at ${LocalDateTime.now()} , testing envoy-gateway for Socket.IO"
+                    "Hello $username($userId) from org $orgId at ${LocalDateTime.now()} , testing envoy-gateway for Socket.IO"
                 )
             })
         server.start()
