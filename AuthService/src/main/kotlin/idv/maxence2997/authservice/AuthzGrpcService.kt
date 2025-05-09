@@ -66,7 +66,7 @@ class AuthzGrpcService(
                 HeaderValueOption.newBuilder()
                     .setHeader(
                         HeaderValue.newBuilder()
-                            .setKey("X-User-Id")
+                            .setKey("x-user-id")
                             .setValue(userBasicInfo.userId.toString())
                     )
             )
@@ -74,7 +74,7 @@ class AuthzGrpcService(
                 HeaderValueOption.newBuilder()
                     .setHeader(
                         HeaderValue.newBuilder()
-                            .setKey("X-Org-Id")
+                            .setKey("x-org-id")
                             .setValue(userBasicInfo.orgId.toString())
                     )
             )
@@ -82,20 +82,21 @@ class AuthzGrpcService(
                 HeaderValueOption.newBuilder()
                     .setHeader(
                         HeaderValue.newBuilder()
-                            .setKey("X-User-Username")
+                            .setKey("x-user-username")
                             .setValue(userBasicInfo.username)
                     )
             )
             .build()
-        responseObserver.onNext(
-            CheckResponse.newBuilder()
-                .setStatus(
-                    Status.newBuilder()
-                        .setCode(Code.OK_VALUE)    // 0 = OK
-                        .build()
-                ).setOkResponse(okHttp)
-                .build()
-        )
+
+        val resp = CheckResponse.newBuilder()
+            .setStatus(
+                Status.newBuilder()
+                    .setCode(Code.OK_VALUE)    // 0 = OK
+                    .build()
+            ).setOkResponse(okHttp)
+            .build()
+
+        responseObserver.onNext(resp)
         responseObserver.onCompleted()
     }
 }
