@@ -42,6 +42,28 @@ services:
     networks:
       - envoy-net
 
+  prometheus:
+    image: prom/prometheus:v3.3.1
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9999:9090"
+    networks:
+      - envoy-net
+
+  grafana:
+    image: grafana/grafana:12.0.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=a12345678
+    depends_on:
+      - prometheus
+    networks:
+      - envoy-net
+
 volumes:
   redis-data:
 
