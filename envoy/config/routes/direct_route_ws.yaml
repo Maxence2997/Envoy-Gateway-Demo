@@ -1,0 +1,23 @@
+# /etc/envoy/config/routes/direct_route_ws.yaml
+version_info: "1"
+resources:
+  - "@type": type.googleapis.com/envoy.config.route.v3.RouteConfiguration
+    name: direct_route_ws
+    virtual_hosts:
+      - name: vh_ws
+        domains: [ "*" ]
+        routes:
+          # WebSocket Route for Socket.IO
+          - match:
+              prefix: "/socket.io/app/"
+            route:
+              cluster: app_service_ws
+              prefix_rewrite: "/socket.io/"
+
+          # Catch-all
+          - match:
+              prefix: "/"
+            direct_response:
+              status: 404
+              body:
+                inline_string: "Not Found"

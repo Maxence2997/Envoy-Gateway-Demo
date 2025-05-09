@@ -1,0 +1,41 @@
+# /etc/envoy/config/routes/direct_route.yaml
+version_info: "1"
+resources:
+  - "@type": type.googleapis.com/envoy.config.route.v3.RouteConfiguration
+    name: direct_route
+    virtual_hosts:
+      - name: vh_http
+        domains: [ "*" ]
+        routes:
+          # White list - disable ext_authz
+          - match:
+              path: "/auth/auth/login"
+            route:
+              cluster: auth_service
+              prefix_rewrite: "/auth/login"
+            typed_per_filter_config:
+              envoy.filters.http.ext_authz:
+                "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
+                disabled: true
+
+          # Route A: /auth → auth_service
+          - match:
+              prefix: "/auth/"
+            route:
+              cluster: auth_service
+              prefix_rewrite: "/"
+
+          # Route B: /app → app_service
+          - match:
+              prefix: "/app/"
+            route:
+              cluster: app_service
+              prefix_rewrite: "/"
+
+          # Catch-all
+          - match:
+              prefix: "/"
+            direct_response:
+              status: 404
+              body:
+                inline_string: "Not Found"

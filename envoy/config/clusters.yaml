@@ -1,0 +1,63 @@
+# /etc/envoy/config/clusters/clusters.yaml
+version_info: "1"
+resources:
+  - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+    name: ext_authz_cluster
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    http2_protocol_options: { }
+    load_assignment:
+      cluster_name: ext_authz_cluster
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: auth-service
+                    port_value: 9100
+
+  - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+    name: auth_service
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: auth_service
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: auth-service
+                    port_value: 8080
+
+  - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+    name: app_service
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: app_service
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: app-service
+                    port_value: 8081
+
+  - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+    name: app_service_ws
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: app_service_ws
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: app-service
+                    port_value: 9090

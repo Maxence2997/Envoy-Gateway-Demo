@@ -5,6 +5,7 @@ services:
     container_name: envoy-gateway
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - ./envoy/config:/etc/envoy/config:ro
     ports:
       - "10000:10000"   # export HTTP Gateway
       - "10001:10001"   # export WebSocket Gateway
@@ -12,6 +13,7 @@ services:
       - "9901:9901"     # Envoy Admin GUI
     networks:
       - envoy-net
+
   redis:
     image: redis:7.0-alpine
     container_name: redis
