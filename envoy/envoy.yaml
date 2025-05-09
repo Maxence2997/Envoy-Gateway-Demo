@@ -75,7 +75,6 @@ static_resources:
                             body:
                               inline_string: "Not Found"
 
-
     - name: ws_listener
       address:
         socket_address:
@@ -135,6 +134,18 @@ static_resources:
                             status: 404
                             body:
                               inline_string: "Not Found"
+
+    - name: tcp_echo_listener
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 10002     # TCP 埠
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.echo
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.echo.v3.Echo
+                # Echo filter 不需要額外設定
 
   clusters:
     - name: ext_authz_cluster

@@ -6,9 +6,10 @@ services:
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
     ports:
-      - "10000:10000"   # 對外開放 HTTP Gateway
-      - "10001:10001"   # 對外開放 WebSocket Gateway
-      - "9901:9901"     # Envoy 管理介面
+      - "10000:10000"   # export HTTP Gateway
+      - "10001:10001"   # export WebSocket Gateway
+      - "10002:10002"   # export TCP Gateway
+      - "9901:9901"     # Envoy Admin GUI
     networks:
       - envoy-net
   redis:
