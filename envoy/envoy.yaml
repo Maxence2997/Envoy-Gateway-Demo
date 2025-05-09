@@ -7,20 +7,60 @@ static_resources:
           port_value: 10000
       filter_chains:
         - filters:
+
             # 包裹 ext_authz + router 的 HTTP Connection Manager
             - name: envoy.filters.network.http_connection_manager
               typed_config:
                 "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
                 stat_prefix: ingress_http
 
-                # gRPC External Authorization
                 http_filters:
+
+                  # Local Rate Limit, 本地端流量控管
+                  - name: envoy.filters.http.local_ratelimit
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+                      stat_prefix: http_local_rate_limiter
+                      token_bucket:
+                        max_tokens: 10            # 水桶最大容量
+                        tokens_per_fill: 10        # 每次 refill 的令牌數
+                        fill_interval: 600s          # refill 間隔, 只接受秒數
+                      filter_enabled:
+                        # 控制有多少比例的請求要做限流檢查（check），
+                        # 但不一定被拒絕。
+                        runtime_key: local_rate_limit_enabled
+                        default_value:
+                          numerator: 90
+                          denominator: HUNDRED     # 90/100 = 90%
+                      filter_enforced:
+                        # 在上一步已經做檢查的請求中，
+                        # 又有多少比例要「真的」因為沒 token 而被 429 拒絕。
+                        runtime_key: local_rate_limit_enforced
+                        default_value:
+                          numerator: 50
+                          denominator: HUNDRED     # 50/100 = 50%
+
+                  # Rate Limit Filter, 透過外部服務來做流量控管
+                  # - name: envoy.filters.http.ratelimit
+                  #   typed_config:
+                  #     "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
+                  #     domain: "api"   # 與外部服務的 domain 對應
+                  #     stage: 0
+                  #     failure_mode_deny: true
+                  #     rate_limit_service:
+                  #       grpc_service:
+                  #         envoy_grpc:
+                  #           cluster_name: rate_limit_cluster
+                  #       timeout: 0.25s
+                  # 再搭配下面各個路徑的 rate_limits: descriptors: 內容資訊做流量控管
+
+                  # gRPC External Authorization
                   - name: envoy.filters.http.ext_authz
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
                       transport_api_version: V3
                       failure_mode_allow: false
-                      clear_route_cache: true
+                      clear_route_cache: true  # Ensure that route cache and header info will be cleared every time
 
                       grpc_service:
                         envoy_grpc:
@@ -48,6 +88,13 @@ static_resources:
                           route:
                             cluster: auth_service
                             prefix_rewrite: "/auth/login"   # 去掉 /auth 前綴，後端看到的是 /xxx
+                          # rate_limits:
+                          #   - actions:
+                          #       # 1. 以 client IP 作為 descriptor.key
+                          #       - remote_address: { }
+                          #       # 2. 固定 generic_key = "login"
+                          #       - generic_key:
+                          #           descriptor_value: "login"
                           typed_per_filter_config:
                             envoy.filters.http.ext_authz:
                               "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
