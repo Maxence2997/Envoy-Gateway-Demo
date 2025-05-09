@@ -149,7 +149,7 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: auth_service # Docker Compose 服務名稱, host.docker.internal for local
+                      address: auth-service # Docker Compose 服務名稱, host.docker.internal for local
                       port_value: 9100
 
     # Cluster: auth_service
@@ -164,7 +164,7 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: auth_service # Docker Compose 服務名稱, host.docker.internal for local
+                      address: auth-service # Docker Compose 服務名稱, host.docker.internal for local
                       port_value: 8080          # Auth Service 的 HTTP port
 
     # Cluster: app_service
@@ -179,7 +179,7 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: app_service # Docker Compose 服務名稱, host.docker.internal for local
+                      address: app-service # Docker Compose 服務名稱, host.docker.internal for local
                       port_value: 8081          # App Service 的 HTTP port
 
     # Cluster: app_service_ws
@@ -194,7 +194,7 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: app_service # Docker Compose 服務名稱, host.docker.internal for local
+                      address: app-service # Docker Compose 服務名稱, host.docker.internal for local
                       port_value: 9090
 
 admin:
