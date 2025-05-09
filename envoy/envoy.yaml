@@ -7,31 +7,62 @@ static_resources:
           port_value: 10000
       filter_chains:
         - filters:
+            # 包裹 ext_authz + router 的 HTTP Connection Manager
             - name: envoy.filters.network.http_connection_manager
               typed_config:
                 "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
                 stat_prefix: ingress_http
+
+                # gRPC External Authorization
+                http_filters:
+                  - name: envoy.filters.http.ext_authz
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz
+                      transport_api_version: V3
+                      failure_mode_allow: false
+                      clear_route_cache: true
+
+                      grpc_service:
+                        envoy_grpc:
+                          cluster_name: ext_authz_cluster
+
+                      allowed_headers:
+                        patterns:
+                          - exact: "x-auth-token"
+
+                  # Router Filter
+                  - name: envoy.filters.http.router
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+
                 route_config:
                   name: direct_route
                   virtual_hosts:
                     - name: vh_http
                       domains: [ "*" ]
                       routes:
-
-                        # Route A: /auth 前綴，轉到 auth_service
+                        # 白名單
                         - match:
-                            prefix: "/auth"
+                            path: "/auth/auth/login"
                           route:
                             cluster: auth_service
-                            prefix_rewrite: ""   # 去掉 /auth 前綴，後端看到的是 /xxx
-
+                            prefix_rewrite: "/auth/login"   # 去掉 /auth 前綴，後端看到的是 /xxx
+                          typed_per_filter_config:
+                            envoy.filters.http.ext_authz:
+                              "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
+                              disabled: true  # 不需要驗證的路由
+                        # Route A: /auth 前綴，轉到 auth_service
+                        - match:
+                            prefix: "/auth/"
+                          route:
+                            cluster: auth_service
+                            prefix_rewrite: "/"   # 去掉 /auth 前綴，後端看到的是 /xxx
                         # Route B: /app 前綴，轉到 app_service
                         - match:
-                            prefix: "/app"
+                            prefix: "/app/"
                           route:
                             cluster: app_service
-                            prefix_rewrite: ""
-
+                            prefix_rewrite: "/"
                         # Catch-all：其餘 404
                         - match:
                             prefix: "/"
@@ -39,10 +70,7 @@ static_resources:
                             status: 404
                             body:
                               inline_string: "Not Found"
-                http_filters:
-                  - name: envoy.filters.http.router
-                    typed_config:
-                      "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+
 
     - name: ws_listener
       address:
@@ -84,6 +112,21 @@ static_resources:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
 
   clusters:
+    - name: ext_authz_cluster
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      http2_protocol_options: { }
+      load_assignment:
+        cluster_name: ext_authz_cluster
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: host.docker.internal
+                      port_value: 9100
+
     # Cluster: auth_service
     - name: auth_service
       connect_timeout: 0.25s
@@ -96,7 +139,7 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: auth-service    # Docker Compose 服務名稱
+                      address: host.docker.internal
                       port_value: 8080          # Auth Service 的 HTTP port
 
     # Cluster: app_service
@@ -111,7 +154,7 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: app-service     # Docker Compose 服務名稱
+                      address: host.docker.internal     # Docker Compose 服務名稱
                       port_value: 8081          # App Service 的 HTTP port
 
     # Cluster: socketio_manager
@@ -126,7 +169,7 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: app-service
+                      address: host.docker.internal
                       port_value: 9090
 
 admin:
