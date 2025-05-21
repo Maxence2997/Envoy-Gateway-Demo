@@ -1,4 +1,4 @@
-# /etc/envoy/config/listeners/listeners.yaml
+# /etc/envoy/config/listeners.yaml
 version_info: "1"
 resources:
   - "@type": type.googleapis.com/envoy.config.listener.v3.Listener
