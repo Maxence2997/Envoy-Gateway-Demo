@@ -19,18 +19,15 @@
     <github.username>maxence2997</github.username>
     <docker.username>maxence2997</docker.username>
     <docker-io.host>docker.io</docker-io.host>
-    <socketio.version>2.0.13</socketio.version>
+    <!-- Protocol Buffers Java runtime -->
+    <protobuf.version>4.30.2</protobuf.version>
+    <!-- gRPC Java libraries -->
+    <grpc.version>1.72.0</grpc.version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <!-- Socket.IO Server (netty-socketio) -->
-    <dependency>
-      <groupId>com.corundumstudio.socketio</groupId>
-      <artifactId>netty-socketio</artifactId>
-      <version>${socketio.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
@@ -43,6 +40,23 @@
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib</artifactId>
+    </dependency>
+
+    <!-- Protobuf & gRPC runtime -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobuf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+      <version>${grpc.version}</version>
     </dependency>
 
     <dependency>
