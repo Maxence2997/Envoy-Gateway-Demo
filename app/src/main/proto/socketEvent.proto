@@ -1,0 +1,26 @@
+syntax = "proto3";
+package idv.maxence2997.app.proto;
+
+// 轉發 Socket 訊息的 Service
+service SocketEventService {
+  // 客戶端傳來 eventName + payload + user metadata
+  rpc HandleEvent(HandleEventRequest) returns (HandleEventResponse);
+}
+
+message HandleEventRequest {
+  GrpcHeader header = 1;
+  string payload = 2;
+}
+
+message HandleEventResponse {
+  bool   success = 1;
+  string reply_message = 2;
+}
+
+
+message GrpcHeader {
+  string user_id = 1;
+  string org_id = 2;
+  string username = 3;
+  string event_name = 4;
+}
