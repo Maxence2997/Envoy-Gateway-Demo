@@ -7,4 +7,10 @@ server:
 
 socket:
   host: 0.0.0.0
-  port: 9090
+  port: 8882
+
+grpc:
+  client:
+    appService:
+      address: localhost:9090
+      negotiation-type: plaintext

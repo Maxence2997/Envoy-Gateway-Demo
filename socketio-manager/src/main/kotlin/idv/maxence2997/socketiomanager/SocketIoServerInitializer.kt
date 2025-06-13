@@ -1,16 +1,21 @@
 package idv.maxence2997.socketiomanager
 
 import com.corundumstudio.socketio.SocketIOServer
+import idv.maxence2997.app.grpc.SocketEvent.GrpcHeader
+import idv.maxence2997.app.grpc.SocketEvent.HandleEventRequest
+import idv.maxence2997.app.grpc.SocketEventServiceGrpc
+import net.devh.boot.grpc.client.inject.GrpcClient
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 @Component
 @DependsOn("socketServer") // 確保 socketServer 先建立
 class SocketIoServerInitializer(
     private val server: SocketIOServer,
+    @GrpcClient("appService")
+    private val socketEventStub: SocketEventServiceGrpc.SocketEventServiceBlockingStub
 ) : InitializingBean,
     DisposableBean {
     override fun afterPropertiesSet() {
@@ -31,10 +36,17 @@ class SocketIoServerInitializer(
 
             println("Received message: $data from userId=$userId, orgId=$orgId, username=$username")
 
-            // TODO: 轉發到 app service through grpc with static route config.
-            client.sendEvent(
-                "resp-testing-envoy-gateway-socketio",
-                "Hello $username($userId) from org $orgId at ${LocalDateTime.now()} , testing envoy-gateway for Socket.IO",
+            // 2. 呼叫 gRPC 服務
+            socketEventStub.handleEvent(
+                HandleEventRequest.newBuilder().apply {
+                    this.header = GrpcHeader.newBuilder().apply {
+                        this.username = username
+                        this.userId = userId
+                        this.orgId = orgId
+                        this.eventName = "req-testing-envoy-gateway-socketio"
+                    }.build()
+                    this.payload = data
+                }.build()
             )
 
             // ACK

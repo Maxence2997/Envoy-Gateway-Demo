@@ -18,10 +18,9 @@
     <java.version>21</java.version>
     <kotlin.version>2.1.20</kotlin.version>
     <socketio.version>2.0.13</socketio.version>
-    <!-- Protocol Buffers Java runtime -->
+    <!-- 同步使用 Proto 模組的版本 -->
     <protobuf.version>4.30.2</protobuf.version>
-    <!-- gRPC Java libraries -->
-    <grpc.version>1.72.0</grpc.version>
+    <grpc.version>1.70.0</grpc.version>
     <grpc-server-spring-boot-starter.version>3.1.0.RELEASE</grpc-server-spring-boot-starter.version>
     <github.username>maxence2997</github.username>
     <docker.username>maxence2997</docker.username>
@@ -57,27 +56,16 @@
       <artifactId>netty-socketio</artifactId>
       <version>${socketio.version}</version>
     </dependency>
-    <!-- gRPCServer Starter -->
+    <dependency>
+      <groupId>idv.maxence2997</groupId>
+      <artifactId>proto</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- gRPC Client Starter -->
     <dependency>
       <groupId>net.devh</groupId>
-      <artifactId>grpc-server-spring-boot-starter</artifactId>
+      <artifactId>grpc-client-spring-boot-starter</artifactId>
       <version>${grpc-server-spring-boot-starter.version}</version>
-    </dependency>
-    <!-- Protobuf & gRPC runtime -->
-    <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-      <version>${protobuf.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-protobuf</artifactId>
-      <version>${grpc.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-stub</artifactId>
-      <version>${grpc.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package idv.maxence2997.app.proto;
+package idv.maxence2997.app.grpc;
 
 // 轉發 Socket 訊息的 Service
 service SocketEventService {

@@ -19,12 +19,19 @@
     <github.username>maxence2997</github.username>
     <docker.username>maxence2997</docker.username>
     <docker-io.host>docker.io</docker-io.host>
-    <!-- Protocol Buffers Java runtime -->
+    <!-- 同步使用 Proto 模組的版本 -->
     <protobuf.version>4.30.2</protobuf.version>
-    <!-- gRPC Java libraries -->
-    <grpc.version>1.72.0</grpc.version>
     <grpc-server-spring-boot-starter.version>3.1.0.RELEASE</grpc-server-spring-boot-starter.version>
   </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>net.devh</groupId>
+        <artifactId>grpc-server-spring-boot-starter</artifactId>
+        <version>${grpc-server-spring-boot-starter.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -43,34 +50,16 @@
       <artifactId>kotlin-stdlib</artifactId>
     </dependency>
 
-    <!-- gRPCServer Starter -->
+    <dependency>
+      <groupId>idv.maxence2997</groupId>
+      <artifactId>proto</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- gRPC Server Starter -->
     <dependency>
       <groupId>net.devh</groupId>
       <artifactId>grpc-server-spring-boot-starter</artifactId>
-      <version>${grpc-server-spring-boot-starter.version}</version>
-    </dependency>
-    <!-- Protobuf & gRPC runtime -->
-
-    <!-- 為了讓 gRPC stub 裡的 @Generated 可以被找到 -->
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <version>1.3.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-      <version>${protobuf.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-protobuf</artifactId>
-      <version>${grpc.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-stub</artifactId>
-      <version>${grpc.version}</version>
     </dependency>
 
     <dependency>
@@ -90,37 +79,9 @@
   </dependencies>
 
   <build>
-    <extensions>
-      <!-- 偵測本機 OS，供 protoc 用 -->
-      <extension>
-        <groupId>kr.motd.maven</groupId>
-        <artifactId>os-maven-plugin</artifactId>
-        <version>1.7.0</version>
-      </extension>
-    </extensions>
     <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
     <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
     <plugins>
-      <plugin>
-        <groupId>org.xolstice.maven.plugins</groupId>
-        <artifactId>protobuf-maven-plugin</artifactId>
-        <version>0.6.1</version>
-        <configuration>
-          <!--suppress UnresolvedMavenProperty -->
-          <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
-          <pluginId>grpc-java</pluginId>
-          <!--suppress UnresolvedMavenProperty -->
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>compile-custom</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -131,8 +92,8 @@
         <version>${kotlin.version}</version>
         <executions>
           <execution>
-            <id>compile</id>
-            <phase>compile</phase>
+            <id>process-sources</id>
+            <phase>process-sources</phase>
             <goals>
               <goal>compile</goal>
             </goals>
