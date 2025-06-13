@@ -1,13 +1,11 @@
-package idv.maxence2997.authservice
+package idv.maxence2997.auth
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class AuthServiceApplicationTests {
-
-	@Test
-	fun contextLoads() {
-	}
-
+class AuthApplicationTests {
+    @Test
+    fun contextLoads() {
+    }
 }
