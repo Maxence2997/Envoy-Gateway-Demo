@@ -1,11 +1,11 @@
-package idv.maxence2997.appservice
+package idv.maxence2997.app
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class AppServiceApplication
+class AppApplication
 
 fun main(args: Array<String>) {
-    runApplication<AppServiceApplication>(*args)
+    runApplication<AppApplication>(*args)
 }

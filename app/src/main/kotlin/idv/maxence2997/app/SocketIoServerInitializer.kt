@@ -1,13 +1,12 @@
-package idv.maxence2997.appservice
+package idv.maxence2997.app
 
 import com.corundumstudio.socketio.SocketIOServer
 import com.corundumstudio.socketio.listener.DataListener
-import java.time.LocalDateTime
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.annotation.DependsOn
 import org.springframework.stereotype.Component
-
+import java.time.LocalDateTime
 
 @Component
 @DependsOn("socketServer") // 確保 socketServer 先建立
@@ -23,19 +22,22 @@ class SocketIoServerInitializer(
                 // 1. 拿到原始的 HTTP headers
                 val headers = client.handshakeData.httpHeaders
 
-                val userId = headers.get("x-user-id")
-                    ?: error("X-User-Id header not found")
-                val orgId = headers.get("x-org-id")
-                    ?: error("X-Org-Id header not found")
+                val userId =
+                    headers.get("x-user-id")
+                        ?: error("X-User-Id header not found")
+                val orgId =
+                    headers.get("x-org-id")
+                        ?: error("X-Org-Id header not found")
                 val username = headers.get("X-User-Username") ?: ""
 
                 println("Received message: $data from userId=$userId, orgId=$orgId, username=$username")
 
                 client.sendEvent(
                     "resp-testing-envoy-gateway-socketio",
-                    "Hello $username($userId) from org $orgId at ${LocalDateTime.now()} , testing envoy-gateway for Socket.IO"
+                    "Hello $username($userId) from org $orgId at ${LocalDateTime.now()} , testing envoy-gateway for Socket.IO",
                 )
-            })
+            },
+        )
         server.start()
     }
 

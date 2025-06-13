@@ -1,13 +1,12 @@
-package idv.maxence2997.appservice
+package idv.maxence2997.app
 
 import jakarta.servlet.http.HttpServletRequest
-import java.time.LocalDateTime
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDateTime
 
 @RestController
 class HelloController {
-
     @GetMapping("/hello")
     fun hello(request: HttpServletRequest): String {
         val userId = request.getHeader("x-user-id") ?: error("x-user-id header not found")
