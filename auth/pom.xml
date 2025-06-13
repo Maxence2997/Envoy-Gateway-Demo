@@ -9,7 +9,7 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>idv.maxence2997</groupId>
-  <artifactId>authservice</artifactId>
+  <artifactId>auth</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>AuthService</name>
   <description>AuthService</description>
