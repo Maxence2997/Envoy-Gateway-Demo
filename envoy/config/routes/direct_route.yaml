@@ -4,7 +4,7 @@ resources:
   - "@type": type.googleapis.com/envoy.config.route.v3.RouteConfiguration
     name: direct_route
     virtual_hosts:
-      - name: vh_http
+      - name: vh_all
         domains: [ "*" ]
         routes:
           # White list - disable ext_authz
@@ -17,6 +17,12 @@ resources:
               envoy.filters.http.ext_authz:
                 "@type": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute
                 disabled: true
+
+          # WebSocket Route for Socket.IO
+          - match:
+              prefix: "/socket.io/"
+            route:
+              cluster: socket_io_manager
 
           # Route A: /auth → auth_service
           - match:

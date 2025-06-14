@@ -48,16 +48,16 @@ resources:
                     port_value: 8081
 
   - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
-    name: app_service_ws
+    name: socket_io
     connect_timeout: 0.25s
     type: LOGICAL_DNS
     lb_policy: ROUND_ROBIN
     load_assignment:
-      cluster_name: app_service_ws
+      cluster_name: socket_io_manager
       endpoints:
         - lb_endpoints:
             - endpoint:
                 address:
                   socket_address:
-                    address: app-service
-                    port_value: 9090
+                    address: socket-io-manager
+                    port_value: 8882
