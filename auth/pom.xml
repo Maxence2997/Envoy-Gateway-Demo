@@ -28,7 +28,7 @@
     <docker.username>maxence2997</docker.username>
     <docker-io.host>docker.io</docker-io.host>
     <!-- 對應 Spring Boot 3.2.x / 3.4.x -->
-    <spring-cloud-dependencies.version>2023.0.1</spring-cloud-dependencies.version>
+    <spring-cloud-dependencies.version>2024.0.1</spring-cloud-dependencies.version>
   </properties>
 
   <dependencyManagement>
@@ -51,6 +51,25 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-bootstrap</artifactId>
+    </dependency>
+    <!-- Spring Cloud Load Balancer Cache usage -->
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>

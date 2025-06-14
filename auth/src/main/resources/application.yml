@@ -1,11 +1,9 @@
 spring:
-  application:
-    name: AuthService
   redis:
     redisson:
       config: |
         singleServerConfig:
-          address: ${REDIS_ADDRESS:redis://127.0.0.1:6378}
+          address: ${REDIS_ADDRESS:redis://127.0.0.1:6379}
           password: ${REDIS_PASSWORD:}
           timeout: 3000
           connectionPoolSize: 64
@@ -13,11 +11,6 @@ spring:
           connectionMinimumIdleSize: 10
         threads: 16
         nettyThreads: 32
-
-grpc:
-  server:
-    port: 9100
-    address: 0.0.0.0
 
 management:
   endpoints:
