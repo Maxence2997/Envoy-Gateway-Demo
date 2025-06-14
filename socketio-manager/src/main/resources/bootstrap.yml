@@ -17,7 +17,7 @@ spring:
           # 因為 grpc-spring-boot-starter 會自動向 Consul 提供 grpc 服務的端口
 
 server:
-  port: 8082
+  port: 8083
 
 socket:
   host: 0.0.0.0
