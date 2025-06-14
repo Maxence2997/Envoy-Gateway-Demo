@@ -22,6 +22,8 @@
     <!-- 同步使用 Proto 模組的版本 -->
     <protobuf.version>4.30.2</protobuf.version>
     <grpc-server-spring-boot-starter.version>3.1.0.RELEASE</grpc-server-spring-boot-starter.version>
+    <!-- 對應 Spring Boot 3.4.x -->
+    <spring-cloud-dependencies.version>2024.0.1</spring-cloud-dependencies.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -30,12 +32,32 @@
         <artifactId>grpc-server-spring-boot-starter</artifactId>
         <version>${grpc-server-spring-boot-starter.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud-dependencies.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-bootstrap</artifactId>
+    </dependency>
+    <!-- Spring Cloud Load Balancer Cache usage -->
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>

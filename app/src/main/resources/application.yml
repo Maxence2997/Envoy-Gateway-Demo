@@ -1,10 +1,12 @@
 spring:
-  application:
-    name: App
-
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=60s
 server:
   port: 8081
 
 grpc:
   server:
     port: 9090
+
