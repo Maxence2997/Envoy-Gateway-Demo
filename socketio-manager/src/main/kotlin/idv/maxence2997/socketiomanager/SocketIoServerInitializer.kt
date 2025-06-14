@@ -30,12 +30,12 @@ class SocketIoServerInitializer(
 
             val userId =
                 headers.get("x-user-id")
-                //TODO: Recover from error
+                    // TODO: Recover from error
 //                    ?: error("x-User-Id header not found")
                     ?: "user-id-not-found"
             val orgId =
                 headers.get("x-org-id")
-                //TODO: Recover from error
+                    // TODO: Recover from error
 //                    ?: error("x-Org-Id header not found")
                     ?: "org-id-not-found"
             val username = headers.get("X-User-Username") ?: ""
@@ -43,37 +43,48 @@ class SocketIoServerInitializer(
             println("Received message: $data from userId=$userId, orgId=$orgId, username=$username")
 
             // 2. 呼叫 gRPC 服務
-            val request = HandleEventRequest.newBuilder().apply {
-                this.header = GrpcHeader.newBuilder().apply {
-                    this.username = username
-                    this.userId = userId
-                    this.orgId = orgId
-                    this.eventName = "req-testing-envoy-gateway-socketio"
-                }.build()
-                this.payload = data
-            }.build()
+            val request =
+                HandleEventRequest
+                    .newBuilder()
+                    .apply {
+                        this.header =
+                            GrpcHeader
+                                .newBuilder()
+                                .apply {
+                                    this.username = username
+                                    this.userId = userId
+                                    this.orgId = orgId
+                                    this.eventName = "req-testing-envoy-gateway-socketio"
+                                }.build()
+                        this.payload = data
+                    }.build()
 
-            val socketEventStub = grpcInstanceResolver.resolveStub("App-Service") {
-                SocketEventServiceGrpc.newFutureStub(it)
-            }
+            val socketEventStub =
+                grpcInstanceResolver.resolveStub("App-Service") {
+                    SocketEventServiceGrpc.newFutureStub(it)
+                }
 
             val future = socketEventStub.handleEvent(request)
 
-            Futures.addCallback(future, object : FutureCallback<HandleEventResponse> {
-                override fun onSuccess(result: HandleEventResponse) {
-                    // 成功邏輯，可以 log 或進一步處理
-                    val message = result.toString()
-                    println("gRPC Success: $message")
-                    client.sendEvent("resp-testing-envoy-gateway-socketio", message)
-                }
+            Futures.addCallback(
+                future,
+                object : FutureCallback<HandleEventResponse> {
+                    override fun onSuccess(result: HandleEventResponse) {
+                        // 成功邏輯，可以 log 或進一步處理
+                        val message = result.toString()
+                        println("gRPC Success: $message")
+                        client.sendEvent("resp-testing-envoy-gateway-socketio", message)
+                    }
 
-                override fun onFailure(t: Throwable) {
-                    // 錯誤處理
-                    val errorMessage = "gRPC Error: ${t.message}"
-                    println(errorMessage)
-                    client.sendEvent("resp-testing-envoy-gateway-socketio", errorMessage)
-                }
-            }, MoreExecutors.directExecutor())
+                    override fun onFailure(t: Throwable) {
+                        // 錯誤處理
+                        val errorMessage = "gRPC Error: ${t.message}"
+                        println(errorMessage)
+                        client.sendEvent("resp-testing-envoy-gateway-socketio", errorMessage)
+                    }
+                },
+                MoreExecutors.directExecutor(),
+            )
 
             // ACK
             ackSender.sendAckData("ACK: $data")
