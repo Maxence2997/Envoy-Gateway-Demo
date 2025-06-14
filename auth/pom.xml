@@ -27,7 +27,22 @@
     <github.username>maxence2997</github.username>
     <docker.username>maxence2997</docker.username>
     <docker-io.host>docker.io</docker-io.host>
+    <!-- 對應 Spring Boot 3.2.x / 3.4.x -->
+    <spring-cloud-dependencies.version>2023.0.1</spring-cloud-dependencies.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud-dependencies.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>

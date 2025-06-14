@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: Socket-IO-Manager
+  cloud:
+    consul:
+      host: ${SPRING_CLOUD_CONSUL_HOST:localhost}
+      port: 8500
+      discovery:
+        register: true
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}-${random.value}
+        # Consul 註冊時提供的 metadata
+        metadata:
+          # 向 Consul 註冊時提供 socket.io 服務的端口
+          socketio_port: 8882
+          # 向 Consul 註冊時提供的 grpc 服務的端口，不是必要的
+          # 因為 grpc-spring-boot-starter 會自動向 Consul 提供 grpc 服務的端口
+
+server:
+  port: 8082
+
+socket:
+  host: 0.0.0.0
+  port: 8882

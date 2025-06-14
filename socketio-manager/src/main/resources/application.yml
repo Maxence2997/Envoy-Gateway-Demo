@@ -1,16 +1,5 @@
 spring:
-  application:
-    name: SocketIOManager
-
-server:
-  port: 8082
-
-socket:
-  host: 0.0.0.0
-  port: 8882
-
-grpc:
-  client:
-    appService:
-      address: localhost:9090
-      negotiation-type: plaintext
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=60s

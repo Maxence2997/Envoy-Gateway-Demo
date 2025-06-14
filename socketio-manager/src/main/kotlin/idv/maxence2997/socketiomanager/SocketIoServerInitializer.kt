@@ -8,7 +8,6 @@ import idv.maxence2997.app.grpc.SocketEvent.GrpcHeader
 import idv.maxence2997.app.grpc.SocketEvent.HandleEventRequest
 import idv.maxence2997.app.grpc.SocketEvent.HandleEventResponse
 import idv.maxence2997.app.grpc.SocketEventServiceGrpc
-import net.devh.boot.grpc.client.inject.GrpcClient
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.annotation.DependsOn
@@ -18,8 +17,7 @@ import org.springframework.stereotype.Component
 @DependsOn("socketServer") // 確保 socketServer 先建立
 class SocketIoServerInitializer(
     private val server: SocketIOServer,
-    @GrpcClient("appService")
-    private val socketEventStub: SocketEventServiceGrpc.SocketEventServiceFutureStub
+    private val grpcInstanceResolver: GrpcInstanceResolver,
 ) : InitializingBean,
     DisposableBean {
     override fun afterPropertiesSet() {
@@ -54,6 +52,10 @@ class SocketIoServerInitializer(
                 }.build()
                 this.payload = data
             }.build()
+
+            val socketEventStub = grpcInstanceResolver.resolveStub("App-Service") {
+                SocketEventServiceGrpc.newFutureStub(it)
+            }
 
             val future = socketEventStub.handleEvent(request)
 
