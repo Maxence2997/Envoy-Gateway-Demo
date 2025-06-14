@@ -8,3 +8,10 @@ spring:
       discovery:
         register: true
         prefer-ip-address: true
+
+server:
+  port: 8081
+
+grpc:
+  server:
+    port: 9090
