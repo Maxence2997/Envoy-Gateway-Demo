@@ -48,7 +48,7 @@ resources:
                     port_value: 8081
 
   - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
-    name: socket_io
+    name: socket_io_manager
     connect_timeout: 0.25s
     type: LOGICAL_DNS
     lb_policy: ROUND_ROBIN
