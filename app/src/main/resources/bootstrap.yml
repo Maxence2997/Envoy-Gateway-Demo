@@ -1,11 +1,12 @@
 spring:
   application:
-    name: App-Service
+    name: app-service
   cloud:
     consul:
       host: ${SPRING_CLOUD_CONSUL_HOST:localhost}
       port: 8500
       discovery:
+        service-name: app-service
         register: true
         prefer-ip-address: true
         instance-id: ${spring.application.name}-${random.value}
