@@ -43,6 +43,7 @@ services:
 #      - "9100:9100"  # gRPC server port
     depends_on:
       - redis
+      - consul
     networks:
       - envoy-net
 
@@ -54,6 +55,8 @@ services:
 #      - "9090:9090" # Grpc server port
     environment:
       SPRING_CLOUD_CONSUL_HOST: consul
+    depends_on:
+      - consul
     networks:
       - envoy-net
 
@@ -65,6 +68,8 @@ services:
 #      - "8882:8882" # Socket.io server port
     environment:
       SPRING_CLOUD_CONSUL_HOST: consul
+    depends_on:
+      - consul
     networks:
       - envoy-net
 
