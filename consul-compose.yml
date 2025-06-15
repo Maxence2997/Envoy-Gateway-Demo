@@ -1,0 +1,10 @@
+name: Envoy-Demo-Consul
+services:
+  consul:
+    image: consul:1.15
+    container_name: consul
+    ports:
+      - "8500:8500"         # Consul UI
+      - "8600:8600/udp"     # DNS 查詢 (UDP)
+      - "8600:8600/tcp"     # DNS 查詢 (TCP, optional for some clients)
+    command: agent -server -ui -client=0.0.0.0 -bootstrap-expect=1
