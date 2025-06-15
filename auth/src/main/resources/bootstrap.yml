@@ -11,7 +11,7 @@ spring:
         instance-id: ${spring.application.name}-${random.value}
 
 server:
-  port: 8081
+  port: 8080
 
 grpc:
   server:
