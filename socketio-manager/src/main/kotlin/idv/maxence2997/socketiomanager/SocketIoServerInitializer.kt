@@ -31,13 +31,11 @@ class SocketIoServerInitializer(
             val userId =
                 headers.get("x-user-id")
                     // TODO: Recover from error
-//                    ?: error("x-User-Id header not found")
-                    ?: "user-id-not-found"
+                    ?: error("x-User-Id header not found")
             val orgId =
                 headers.get("x-org-id")
                     // TODO: Recover from error
-//                    ?: error("x-Org-Id header not found")
-                    ?: "org-id-not-found"
+                    ?: error("x-Org-Id header not found")
             val username = headers.get("X-User-Username") ?: ""
 
             println("Received message: $data from userId=$userId, orgId=$orgId, username=$username")
