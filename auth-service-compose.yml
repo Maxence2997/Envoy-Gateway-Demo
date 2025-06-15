@@ -1,0 +1,14 @@
+name: Envoy-Demo-Auth-Service
+services:
+  auth-service:
+    container_name: auth-service
+    image: docker.io/maxence2997/envoy-demo:auth-latest
+    ports:
+      - "8080:8080"  # HTTP server port
+      - "9100:9100"  # gRPC server port
+    environment:
+      # host.docker.internal
+      SPRING_CLOUD_CONSUL_HOST: 192.168.2.112
+      CONSUL_REGISTER_HOSTNAME: 192.168.2.112
+      # host.docker.internal
+      REDIS_ADDRESS: redis://192.168.2.112:6379
