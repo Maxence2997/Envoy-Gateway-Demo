@@ -1,0 +1,12 @@
+name: Envoy-Demo-App-Service
+services:
+  app-service:
+    container_name: app-service
+    image: docker.io/maxence2997/envoy-demo:app-latest
+    ports:
+      - "8082:8082" # HTTP server port
+      - "9090:9090" # Grpc server port
+    environment:
+      # host.docker.internal
+      SPRING_CLOUD_CONSUL_HOST: 192.168.2.112
+      CONSUL_REGISTER_HOSTNAME: 192.168.2.112
