@@ -1,0 +1,12 @@
+name: Envoy-Demo-Socket-IO-Manager
+services:
+  socket-io-manager:
+    container_name: socket-io-manager
+    image: docker.io/maxence2997/envoy-demo:socketio-manager-latest
+    ports:
+      - "8083:8083" # HTTP server port
+      - "8882:8882" # Socket.io server port
+    environment:
+      # host.docker.internal
+      SPRING_CLOUD_CONSUL_HOST: 192.168.2.112
+      CONSUL_REGISTER_HOSTNAME: 192.168.2.112
