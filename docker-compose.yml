@@ -5,7 +5,7 @@ services:
     container_name: consul
     ports:
       - "8500:8500"        # Consul UI
-      - "8600:8600/udp"    # DNS 查詢（可選）
+#      - "8600:8600/udp"    # DNS 查詢（可選）
     command: "agent -server -ui -client=0.0.0.0 -bootstrap-expect=1"
     networks:
       - envoy-net
@@ -17,7 +17,6 @@ services:
       - ./envoy/config:/etc/envoy/config:ro
     ports:
       - "10000:10000"   # export HTTP Gateway
-      - "10001:10001"   # export WebSocket Gateway
       - "10002:10002"   # export TCP Gateway
       - "9901:9901"     # Envoy Admin GUI
     networks:
@@ -26,6 +25,8 @@ services:
   redis:
     image: redis:7.0-alpine
     container_name: redis
+#    ports:
+#      - "6379:6379"  # Redis server port
     volumes:
       - redis-data:/data
     networks:
@@ -33,12 +34,13 @@ services:
 
   auth-service:
     container_name: auth-service
-    image: docker.io/maxence2997/envoy-demo:authservice-latest
+    image: docker.io/maxence2997/envoy-demo:auth-latest
     environment:
-      - REDIS_ADDRESS=redis://redis:6379
-    ports:
-      - "8080:8080"  # HTTP server port
-      - "9100:9100"  # gRPC server port
+      SPRING_CLOUD_CONSUL_HOST: consul
+      REDIS_ADDRESS: redis://redis:6379
+#    ports:
+#      - "8080:8080"  # HTTP server port
+#      - "9100:9100"  # gRPC server port
     depends_on:
       - redis
     networks:
@@ -46,10 +48,23 @@ services:
 
   app-service:
     container_name: app-service
-    image: docker.io/maxence2997/envoy-demo:appservice-latest
-    ports:
-      - "8081:8081" # HTTP server port
-      - "9090:9090" # Socket.io server port
+    image: docker.io/maxence2997/envoy-demo:app-latest
+#    ports:
+#      - "8081:8081" # HTTP server port
+#      - "9090:9090" # Grpc server port
+    environment:
+      SPRING_CLOUD_CONSUL_HOST: consul
+    networks:
+      - envoy-net
+
+  socket-io-manager:
+    container_name: socket-io-manager
+    image: docker.io/maxence2997/envoy-demo:socketio-manager-latest
+#    ports:
+#      - "8083:8083" # HTTP server port
+#      - "8882:8882" # Socket.io server port
+    environment:
+      SPRING_CLOUD_CONSUL_HOST: consul
     networks:
       - envoy-net
 
