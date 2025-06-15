@@ -2,13 +2,15 @@ spring:
   application:
     name: app-service
   cloud:
+    # 所有與 Consul 註冊相關名稱統一從 spring.application.name 派生，以利多服務維運與可預期性。
     consul:
       host: ${SPRING_CLOUD_CONSUL_HOST:localhost}
       port: 8500
       discovery:
-        service-name: app-service
+        service-name: ${spring.application.name}
         register: true
-        prefer-ip-address: true
+        prefer-ip-address: false
+        hostname: ${CONSUL_REGISTER_HOSTNAME:${spring.application.name}}
         instance-id: ${spring.application.name}-${random.value}
 
 server:
