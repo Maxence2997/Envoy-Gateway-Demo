@@ -13,6 +13,23 @@
   <artifactId>socketio-manager</artifactId>
   <version>1.0-SNAPSHOT</version>
 
+  <profiles>
+    <profile>
+      <id>amd64</id>
+      <properties>
+        <jib.platform.os>linux</jib.platform.os>
+        <jib.platform.architecture>amd64</jib.platform.architecture>
+      </properties>
+    </profile>
+    <profile>
+      <id>arm64</id>
+      <properties>
+        <jib.platform.os>linux</jib.platform.os>
+        <jib.platform.architecture>arm64</jib.platform.architecture>
+      </properties>
+    </profile>
+  </profiles>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>21</java.version>
@@ -27,6 +44,8 @@
     <docker-io.host>docker.io</docker-io.host>
     <!-- 對應 Spring Boot 3.4.x -->
     <spring-cloud-dependencies.version>2024.0.1</spring-cloud-dependencies.version>
+    <jib.platform.os>linux</jib.platform.os>
+    <jib.platform.architecture>arm64</jib.platform.architecture>
   </properties>
 
   <dependencyManagement>
@@ -194,11 +213,18 @@
         <configuration>
           <from>
             <image>eclipse-temurin:21-jdk-alpine</image>
+            <platforms>
+              <platform>
+                <architecture>${jib.platform.architecture}</architecture>
+                <os>${jib.platform.os}</os>
+              </platform>
+            </platforms>
           </from>
           <to>
             <image>${docker-io.host}/${docker.username}/envoy-demo</image>
             <tags>
               <tag>${project.artifactId}-latest</tag>
+              <tag>${project.artifactId}-${jib.platform.architecture}</tag>
             </tags>
           </to>
           <container>
@@ -206,7 +232,6 @@
           </container>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
 </project>
