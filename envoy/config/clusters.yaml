@@ -45,7 +45,7 @@ resources:
                 address:
                   socket_address:
                     address: app-service.service.consul
-                    port_value: 8081
+                    port_value: 8082
 
   - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
     name: socket_io_manager
