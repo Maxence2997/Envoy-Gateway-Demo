@@ -11,21 +11,22 @@ services:
       - "10002:10002"   # TCP Gateway
       - "9901:9901"     # Envoy Admin GUI
     depends_on:
-      - dnsmasq
+      - coredns
     dns:
-      - 172.28.0.10  # 指向 dnsmasq container
+      - 172.28.0.10  # 指向 coreDNS container
     networks:
       envoy-net:
         ipv4_address: 172.28.0.11
 
-  dnsmasq:
-    image: andyshinn/dnsmasq:2.85
-    container_name: dnsmasq
-    command: [
-      "-k",
-      "--log-facility=-",
-      "--server=/consul/host.docker.internal#8600"
-    ]
+  coredns:
+    image: coredns/coredns:1.12.2
+    container_name: coredns
+    volumes:
+      - ./coredns/Corefile:/Corefile
+    command: -conf /Corefile
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
     networks:
       envoy-net:
         ipv4_address: 172.28.0.10

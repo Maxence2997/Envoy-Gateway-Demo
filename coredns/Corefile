@@ -1,0 +1,9 @@
+. {
+    forward . 1.1.1.1
+    log
+}
+
+service.consul. {
+    forward . 192.168.2.112:8600
+    log
+}
