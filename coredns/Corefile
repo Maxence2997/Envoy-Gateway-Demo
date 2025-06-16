@@ -2,8 +2,14 @@
     forward . 1.1.1.1
     log
 }
+
 # host.docker.internal, adjust according to your host machine's IP address
 service.consul. {
     forward . host.docker.internal:8600
+    cache {
+        success 60
+        denial 10
+      }
     log
+    errors
 }
