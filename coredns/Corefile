@@ -2,8 +2,8 @@
     forward . 1.1.1.1
     log
 }
-
+# host.docker.internal, adjust according to your host machine's IP address
 service.consul. {
-    forward . 192.168.2.112:8600
+    forward . host.docker.internal:8600
     log
 }

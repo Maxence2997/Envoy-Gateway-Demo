@@ -7,6 +7,6 @@ services:
       - "8082:8082" # HTTP server port
       - "9090:9090" # Grpc server port
     environment:
-      # host.docker.internal
-      SPRING_CLOUD_CONSUL_HOST: 192.168.2.112
-      CONSUL_REGISTER_HOSTNAME: 192.168.2.112
+      # host.docker.internal, adjust according to your host machine's IP address
+      SPRING_CLOUD_CONSUL_HOST: host.docker.internal
+      CONSUL_REGISTER_HOSTNAME: host.docker.internal
